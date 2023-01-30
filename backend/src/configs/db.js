@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 // DeprecationWarning
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", true);
 
 module.exports = async () => {
   return mongoose
