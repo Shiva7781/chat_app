@@ -1,0 +1,10 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap"); */
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  color: black;
+  background-image: url("https://images.pexels.com/photos/1590511/pexels-photo-1590511.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  background-size: cover;
+  background-position: center;
+}
