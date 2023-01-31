@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   VStack,
   Button,
@@ -7,70 +7,139 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({
-    pic: "",
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [show, setShow] = useState(false);
-  console.log("userData:", userData);
+  // console.log("userData:", userData);
 
+  const handlePassword = () => setShow(!show);
   const handleInput = (e) => {
     const { name, value } = e.target;
 
-    if (name === "pic") {
-      setUserData({
-        ...userData,
-        [name]: URL.createObjectURL(e.target.files[0]),
-      });
-    } else {
-      setUserData({ ...userData, [name]: value });
+    setUserData({ ...userData, [name]: value });
+  };
+
+  const handleProfile = async (imageFile) => {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", "chat_app");
+
+    try {
+      const { data } = await axios.post(
+        `https://api.cloudinary.com/v1_1/shiva7781/image/upload`,
+        formData
+      );
+
+      userData.pic = data.secure_url;
+      setUserData({ ...userData });
+      setLoading(false);
+
+      // console.log("data:", data);
+      // console.log("userData:", userData);
+    } catch (err) {
+      setLoading(false);
+
+      console.log("err:", err.message);
     }
   };
-  const handlePassword = () => setShow(!show);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    if (userData.password !== userData.confirmPassword) {
+      toast({
+        title: "Password not matching",
+        status: "warning",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+      return setLoading(false);
+    }
+
+    try {
+      const { data } = await axios.post(
+        `http://localhost:7781/api/user`,
+        userData
+      );
+      setLoading(false);
+
+      toast({
+        title: "Registration Successful",
+        status: "success",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+
+      navigate("/chats");
+      console.log("data:", data);
+    } catch (err) {
+      setLoading(false);
+
+      // console.log("err:", err);
+      toast({
+        title: err.response?.data || err.message,
+        status: "warning",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
 
   return (
     <VStack spacing="5px">
-      <FormControl id="pic">
+      <FormControl>
         <FormLabel>Upload Profile Picture</FormLabel>
         <Input
           name="pic"
           type="file"
           p={1.5}
           accept="image/*"
-          onChange={handleInput}
+          onChange={(e) => handleProfile(e.target.files[0])}
         />
       </FormControl>
 
-      <FormControl id="name" isRequired>
+      <FormControl isRequired>
         <FormLabel>Name</FormLabel>
         <Input
           name="name"
           p={1.5}
           placeholder="Enter Your Name"
+          disabled={loading}
           onChange={handleInput}
         />
       </FormControl>
 
-      <FormControl id="email" isRequired>
+      <FormControl isRequired>
         <FormLabel>Email</FormLabel>
         <Input
           name="email"
           type="email"
           p={1.5}
           placeholder="Enter Your Email"
+          disabled={loading}
           onChange={handleInput}
         />
       </FormControl>
 
-      <FormControl id="password" isRequired>
+      <FormControl isRequired>
         <FormLabel>Create Password</FormLabel>
         <InputGroup>
           <Input
@@ -78,9 +147,9 @@ const Signup = () => {
             p={1.5}
             type={show ? "text" : "password"}
             placeholder="Create Password"
+            disabled={loading}
             onChange={handleInput}
           />
-
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handlePassword}>
               {show ? "Hide" : "Show"}
@@ -89,7 +158,7 @@ const Signup = () => {
         </InputGroup>
       </FormControl>
 
-      <FormControl id="confirmPassword" isRequired>
+      <FormControl isRequired>
         <FormLabel>Confirm Password</FormLabel>
         <InputGroup>
           <Input
@@ -97,6 +166,7 @@ const Signup = () => {
             p={1.5}
             type={show ? "text" : "password"}
             placeholder="Confirm Password"
+            disabled={loading}
             onChange={handleInput}
           />
           <InputRightElement width="4.5rem">
@@ -112,6 +182,7 @@ const Signup = () => {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={handleSubmit}
+        isLoading={loading}
       >
         Sign Up
       </Button>
@@ -119,4 +190,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default memo(Signup);

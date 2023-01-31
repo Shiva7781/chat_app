@@ -5,6 +5,7 @@
   display: flex;
   color: black;
   background-image: url("https://images.pexels.com/photos/1590511/pexels-photo-1590511.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  /* background-image: url("https://res.cloudinary.com/shiva7781/image/upload/v1675112480/sample.jpg"); */
   background-size: cover;
   background-position: center;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   VStack,
   FormControl,
@@ -7,38 +7,90 @@ import {
   InputGroup,
   InputRightElement,
   Button,
+  useToast,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({
     email: "",
     password: "",
   });
-  const [show, setShow] = useState(false);
+  // console.log("userData:", userData);
 
+  const handlePassword = () => setShow(!show);
   const handleInput = (e) => {
     const { name, value } = e.target;
 
     setUserData({ ...userData, [name]: value });
   };
-  const handlePassword = () => setShow(!show);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    if (!userData.email || !userData.password) {
+      toast({
+        title: "All fields required",
+        status: "warning",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+      return setLoading(false);
+    }
+
+    try {
+      const { data } = await axios.post(
+        `http://localhost:7781/api/user/login`,
+        userData
+      );
+      setLoading(false);
+
+      toast({
+        title: "Login Successful",
+        status: "success",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      navigate("/chats");
+      console.log("data:", data);
+    } catch (err) {
+      setLoading(false);
+
+      // console.log("err:", err);
+      toast({
+        title: err.response?.data || err.message,
+        status: "warning",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
 
   return (
     <VStack spacing="5px">
-      <FormControl id="emailL" isRequired>
+      <FormControl isRequired>
         <FormLabel>Email</FormLabel>
         <Input
           name="email"
           type="email"
           p={1.5}
           placeholder="Enter Your Email"
+          disabled={loading}
           onChange={handleInput}
         />
       </FormControl>
 
-      <FormControl id="passwordL" isRequired>
+      <FormControl isRequired>
         <FormLabel>Password</FormLabel>
         <InputGroup>
           <Input
@@ -46,9 +98,9 @@ const Login = () => {
             p={1.5}
             type={show ? "text" : "password"}
             placeholder="Create Password"
+            disabled={loading}
             onChange={handleInput}
           />
-
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handlePassword}>
               {show ? "Hide" : "Show"}
@@ -62,6 +114,7 @@ const Login = () => {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={handleSubmit}
+        isLoading={loading}
       >
         Login
       </Button>
@@ -69,4 +122,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default memo(Login);
