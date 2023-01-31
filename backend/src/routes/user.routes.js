@@ -8,11 +8,11 @@ router.post("/", async (req, res) => {
 
   try {
     if (!name || !email || !password) {
-      return res.status(420).json("All fiels required");
+      return res.status(420).json("All fields required");
     }
 
     const emailExist = await User.findOne({ email: req.body.email });
-    if (emailExist) return res.status(420).json("Email already registered!");
+    if (emailExist) return res.status(409).json("Email already registered!");
 
     // Creating a new mongoose doc with hashed password
     const newUser = new User({
