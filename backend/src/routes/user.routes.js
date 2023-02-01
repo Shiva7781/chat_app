@@ -2,7 +2,9 @@ const router = require("express").Router();
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { protect } = require("../middlewares/authMiddleware");
 
+// register
 router.post("/", async (req, res) => {
   let { name, email, password, pic, isAdmin } = req.body;
 
@@ -31,6 +33,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// login
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
@@ -59,6 +62,24 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).json(err.message);
   }
+});
+
+// get users with Authorization
+router.get("/", protect, async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+  // console.log("keyword:", keyword);
+  // console.log("req.user:", req.user);
+
+  // Getting all users except current user
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.status(200).send(users);
 });
 
 module.exports = router;
