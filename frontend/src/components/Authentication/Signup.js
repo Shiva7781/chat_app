@@ -95,6 +95,7 @@ const Signup = () => {
       // console.log("err:", err);
       toast({
         title: err.response?.data || err.message,
+        description: "Registration Failed",
         status: "warning",
         duration: 4321,
         isClosable: true,

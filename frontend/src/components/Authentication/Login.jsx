@@ -68,6 +68,7 @@ const Login = () => {
       // console.log("err:", err);
       toast({
         title: err.response?.data || err.message,
+        description: "Login Failed",
         status: "warning",
         duration: 4321,
         isClosable: true,
