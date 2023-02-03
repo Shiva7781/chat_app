@@ -3,8 +3,14 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const protect = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  // console.log("req.headers:", req.headers);
+
+  if (!authHeader) return res.status(401).json("Token Not Found");
+
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const token = authHeader.split(" ")[1];
+    // console.log("token:", token);
 
     //decodes token id
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);

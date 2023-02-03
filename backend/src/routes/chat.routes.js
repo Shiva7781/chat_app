@@ -143,7 +143,7 @@ router.patch("/groupadd", protect, authAdmin, async (req, res) => {
 });
 
 // removeFromGroup
-router.patch("/groupremove", protect, authAdmin, async (req, res) => {
+router.patch("/groupremove", protect, async (req, res) => {
   const { chatId, userId } = req.body;
 
   const removed = await Chat.findByIdAndUpdate(
