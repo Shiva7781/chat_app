@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import { Box, Stack, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatContextProvider";
 import ChatLoading from "./ChatLoading";
+import GroupChatModal from "./GroupChatModal";
+import { AddIcon } from "@chakra-ui/icons";
 import { getSender } from "../config/ChatLogics";
 
 const MyChats = ({ fetchAgain }) => {
@@ -29,15 +31,15 @@ const MyChats = ({ fetchAgain }) => {
 
       // console.log("data:", data);
     } catch (err) {
-      // console.log('err:', err)
+      console.log("err:", err);
 
       toast({
-        title: err.response?.data || err.message,
-        description: "Error Occured!",
+        title: "Error Occured!",
+        description: err.response?.data || err.message,
         status: "error",
-        duration: 5000,
+        duration: 4321,
         isClosable: true,
-        position: "bottom-left",
+        position: 'top-left',
       });
     }
   };
@@ -56,21 +58,30 @@ const MyChats = ({ fetchAgain }) => {
       alignItems="center"
       p={3}
       bg="white"
-      w={{ base: "100%", md: "31%" }}
+      w={{ base: "100%", md: "30%" }}
       borderRadius="lg"
       borderWidth="1px"
     >
       <Box
+        w="100%"
         pb={3}
         px={3}
-        fontSize={{ base: "28px", md: "30px" }}
+        fontSize={{ base: "28px", md: "2.5rem" }}
         fontFamily="Work sans"
         display="flex"
-        w="100%"
         justifyContent="space-between"
         alignItems="center"
       >
         My Chats
+        <GroupChatModal>
+          <Button
+            display="flex"
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<AddIcon />}
+          >
+            New Group Chat
+          </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display="flex"
@@ -88,7 +99,11 @@ const MyChats = ({ fetchAgain }) => {
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
-                bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
+                _hover={{
+                  background: "#38B2AC",
+                  color: "white",
+                }}
+                bg={selectedChat === chat ? "coral" : "#E8E8E8"}
                 color={selectedChat === chat ? "white" : "black"}
                 px={3}
                 py={2}

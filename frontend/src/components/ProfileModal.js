@@ -19,7 +19,7 @@ const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <div>
+    <>
       {children ? (
         <span onClick={onOpen}>{children}</span>
       ) : (
@@ -63,11 +63,20 @@ const ProfileModal = ({ user, children }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button
+              onClick={onClose}
+              color="white"
+              bg="#38B2AC"
+              _hover={{
+                background: "coral",
+              }}
+            >
+              Close
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 };
 

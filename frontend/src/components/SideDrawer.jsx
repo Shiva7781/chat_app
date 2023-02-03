@@ -73,11 +73,11 @@ const SideDrawer = () => {
       setSearchResult(data);
     } catch (err) {
       setLoading(false);
-      // console.log("err:", err.message);
+      console.log("err:", err);
 
       toast({
-        title: err.response?.data || err.message,
-        description: "Failed to Load the search Results",
+        title: "Failed to Load the search Results",
+        description: err.response?.data || err.message,
         status: "warning",
         duration: 4321,
         isClosable: true,
@@ -114,10 +114,11 @@ const SideDrawer = () => {
       // console.log("data", data);
     } catch (err) {
       setLoadingChat(false);
-      // console.log("err:", err.message);
+      console.log("err:", err);
 
       toast({
-        title: err.response?.data || err.message,
+        title: "Error Occured!",
+        description: err.response?.data || err.message,
         status: "warning",
         duration: 4321,
         isClosable: true,
@@ -199,7 +200,7 @@ const SideDrawer = () => {
                 <UserListItem
                   key={user._id}
                   user={user}
-                  handleFunc={() => accessChat(user._id)}
+                  handleFunction={() => accessChat(user._id)}
                 />
               ))
             )}

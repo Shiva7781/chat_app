@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box } from "@chakra-ui/react";
-import axios from "axios";
 import { ChatState } from "../Context/ChatContextProvider";
 import SideDrawer from "./SideDrawer";
 import MyChats from "./MyChats";
@@ -8,20 +7,7 @@ import ChatBox from "./ChatBox";
 
 const Chat = () => {
   const { user } = ChatState();
-
-  // useEffect(() => {
-  //   const fetchChats = async () => {
-  //     try {
-  //       const { data } = await axios.get(`http://localhost:7781/api/chat`);
-
-  //       setChats(data);
-  //       // console.log("data:", data);
-  //     } catch (err) {
-  //       console.log("err:", err);
-  //     }
-  //   };
-  //   fetchChats();
-  // }, []);
+  const [fetchAgain, setFetchAgain] = useState(false);
 
   return (
     <div style={{ width: "100%", color: "black" }}>
@@ -33,8 +19,10 @@ const Chat = () => {
         display="flex"
         justifyContent="space-between"
       >
-        {user && <MyChats />}
-        {user && <ChatBox />}
+        {user && <MyChats fetchAgain={fetchAgain} />}
+        {user && (
+          <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+        )}
       </Box>
       ;
     </div>
