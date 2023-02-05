@@ -21,7 +21,9 @@ const Home = () => {
     if (userInfo) {
       navigate("/chats");
     }
-  }, [userInfo && userInfo.accessToken]);
+
+    // eslint-disable-next-line
+  }, [userInfo?.accessToken]);
 
   return (
     <Container maxW="xl" centerContent>

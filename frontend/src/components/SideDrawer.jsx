@@ -140,7 +140,7 @@ const SideDrawer = () => {
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen} ref={btnRef}>
-            <Search2Icon />
+            <Search2Icon boxSize={5} />
             <Text display={{ base: "none", md: "flex" }} px="3">
               Search User
             </Text>
@@ -154,7 +154,7 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <BellIcon m={1} />
+              <BellIcon m={1} boxSize={6} />
             </MenuButton>
             {/* <MenuList></MenuList> */}
           </Menu>

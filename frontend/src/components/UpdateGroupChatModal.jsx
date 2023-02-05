@@ -22,7 +22,7 @@ import { ChatState } from "../Context/ChatContextProvider";
 import UserBadgeItem from "./UserBadgeItem";
 import UserListItem from "./UserListItem";
 
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -120,6 +120,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
 
       setFetchAgain(!fetchAgain);
+      fetchMessage();
       setLoading(false);
     } catch (error) {
       toast({
