@@ -115,7 +115,7 @@ const MyChats = ({ fetchAgain }) => {
                 <Avatar
                   mt="7px"
                   mr={1}
-                  size="lg"
+                  size="md"
                   cursor="pointer"
                   src={getSenderPic(loggedUser, chat.users)}
                 />

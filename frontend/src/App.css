@@ -30,9 +30,26 @@
 }
 
 /* Messages */
-.messages {
+.Messages {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
   scrollbar-width: none;
+}
+
+/* Sender */
+.Sender {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 11px;
+}
+
+.send_button {
+  padding: 7px;
+  color: white;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(98.63deg, #f9a225 0%, #f95f35 100%);
 }

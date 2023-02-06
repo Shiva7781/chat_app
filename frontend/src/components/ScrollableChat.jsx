@@ -1,48 +1,47 @@
-import React, { memo } from "react";
-import {
-  isLastMessage,
-  isSameSender,
-  isSameSenderMargin,
-  isSameUser,
-} from "../config/ChatLogics";
-import { Avatar, Tooltip } from "@chakra-ui/react";
+import React, { useEffect, useRef, memo } from "react";
+import { isSameSenderMargin, isSameUser } from "../config/ChatLogics";
 import { ChatState } from "../Context/ChatContextProvider";
 
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
+  const scroll = useRef();
+
+  // console.log("messages:", messages);
+
+  // Always scroll to last Message
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+
+    // eslint-disable-next-line
+  }, [messages?.length]);
 
   return (
     <>
-      {messages.map((m, i) => (
-        <div style={{ display: "flex" }} key={m._id}>
-          {(isSameSender(messages, m, i, user._id) ||
-            isLastMessage(messages, i, user._id)) && (
-            <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
-              <Avatar
-                mt="7px"
-                mr={1}
-                size="sm"
-                cursor="pointer"
-                name={m.sender.name}
-                src={m.sender.pic}
-              />
-            </Tooltip>
-          )}
-
-          <span
+      {messages.map((msg, i) => (
+        <div
+          ref={scroll}
+          key={msg._id}
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
             style={{
               backgroundColor: `${
-                m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"
+                msg.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"
               }`,
               borderRadius: "20px",
               padding: "5px 15px",
-              maxWidth: "75%",
-              marginLeft: isSameSenderMargin(messages, m, i, user._id),
-              marginTop: isSameUser(messages, m, i) ? 3 : 11,
+              maxWidth: "77%",
+              marginLeft: isSameSenderMargin(messages, msg, i, user._id),
+              marginTop: isSameUser(messages, msg, i) ? 3 : 11,
             }}
           >
-            {m.content}
-          </span>
+            <p style={{ fontSize: "18px" }}>{msg.content}</p>
+            <p style={{ fontSize: "12px", color: "GrayText" }}>
+              {new Date(msg.createdAt).toLocaleString()}
+            </p>
+          </div>
         </div>
       ))}
     </>

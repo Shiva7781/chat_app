@@ -3,9 +3,7 @@ import axios from "axios";
 import {
   Avatar,
   Box,
-  FormControl,
   IconButton,
-  Input,
   Spinner,
   Text,
   useToast,
@@ -16,6 +14,7 @@ import { getSenderName, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "./ProfileModal";
 import UpdateGroupChatModal from "./UpdateGroupChatModal";
 import ScrollableChat from "./ScrollableChat";
+import InputEmoji from "react-input-emoji";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat } = ChatState();
@@ -24,6 +23,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+
+  useEffect(() => {
+    fetchMessage();
+
+    // eslint-disable-next-line
+  }, [selectedChat]);
 
   const fetchMessage = async () => {
     if (!selectedChat) return;
@@ -61,60 +66,67 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  const sendMessage = async (e) => {
-    if (e.key === "Enter" && newMessage) {
-      try {
-        const config = {
-          headers: {
-            "Contenet-Type": "application/json",
-            authorization: `Bearer ${user.accessToken}`,
-          },
-        };
-        const { data } = await axios.post(
-          "http://localhost:7781/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat._id,
-          },
-          config
-        );
-        setNewMessage("");
+  const typingHandler = (msg) => {
+    console.log("msg:", msg);
 
-        setMessages([...messages, data]);
-
-        // console.log("data:", data);
-      } catch (err) {
-        console.log("err:", err);
-
-        toast({
-          title: "Error Occured!",
-          description: err.response?.data || err.message,
-          status: "error",
-          duration: 3210,
-          isClosable: true,
-          position: "bottom",
-        });
-      }
-    }
-  };
-
-  const typingHandler = (e) => {
-    setNewMessage(e.target.value);
-
+    setNewMessage(msg);
     // Typing Indicator Logic
   };
 
-  useEffect(() => {
-    fetchMessage();
+  const sendMessage = async () => {
+    if (!newMessage) {
+      return toast({
+        title: "Type some message",
+        description: "Input Message Not Found",
+        status: "warning",
+        duration: 4321,
+        isClosable: true,
+        position: "top",
+      });
+    }
 
-    // eslint-disable-next-line
-  }, [selectedChat]);
+    try {
+      const config = {
+        headers: {
+          "Contenet-Type": "application/json",
+          authorization: `Bearer ${user.accessToken}`,
+        },
+      };
+      const { data } = await axios.post(
+        "http://localhost:7781/api/message",
+        {
+          content: newMessage,
+          chatId: selectedChat._id,
+        },
+        config
+      );
+
+      setMessages([...messages, data]);
+      setNewMessage("");
+
+      // console.log("data:", data);
+    } catch (err) {
+      console.log("err:", err);
+
+      toast({
+        title: "Error Occured!",
+        description: err.response?.data || err.message,
+        status: "error",
+        duration: 3210,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
+
+  // console.log("user:", user);
+  // console.log("selectedChat:", selectedChat);
 
   return (
     <>
       {selectedChat ? (
         <>
-          <Text
+          <Box
             fontSize={{ base: "28px", md: "2.5rem" }}
             pb={3}
             px={2}
@@ -124,20 +136,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             justifyContent={{ base: "space-between" }}
             alignItems="center"
           >
-            <Avatar
-              mt="7px"
-              mr={1}
-              size="lg"
-              cursor="pointer"
-              src={
-                user.isGroupChat
-                  ? user.groupAdmin.pic
-                  : user._id !== selectedChat?.users[0]._id
-                  ? selectedChat.users[0].pic
-                  : selectedChat.users[1].pic
-              }
-            />
-
             <IconButton
               display={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
@@ -145,12 +143,44 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             />
             {!selectedChat.isGroupChat ? (
               <>
-                {getSenderName(user, selectedChat.users)}
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Avatar
+                    mt="7px"
+                    mr={1}
+                    size="md"
+                    cursor="pointer"
+                    src={
+                      user._id !== selectedChat.users[0]._id
+                        ? selectedChat.users[0]?.pic
+                        : selectedChat.users[1]?.pic
+                    }
+                  />
+                  <Text>{getSenderName(user, selectedChat.users)}</Text>
+                </Box>
+
                 <ProfileModal user={getSenderFull(user, selectedChat.users)} />
               </>
             ) : (
               <>
-                {selectedChat.chatName.toUpperCase()}
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Avatar
+                    mt="7px"
+                    mr={1}
+                    size="md"
+                    cursor="pointer"
+                    src={selectedChat.groupAdmin?.pic}
+                  />
+                  <Text>{selectedChat.chatName.toUpperCase()}</Text>
+                </Box>
+
                 <UpdateGroupChatModal
                   fetchAgain={fetchAgain}
                   setFetchAgain={setFetchAgain}
@@ -158,7 +188,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 />
               </>
             )}
-          </Text>
+          </Box>
+
           <Box
             display="flex"
             flexDir="column"
@@ -171,7 +202,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflowY="hidden"
           >
             {/* Messages Here */}
-
             {loading ? (
               <Spinner
                 size="xl"
@@ -182,19 +212,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               // Messages
-              <div className="messages">
+              <div className="Messages">
                 <ScrollableChat messages={messages} />
               </div>
             )}
-            <FormControl onKeyDown={sendMessage} isRequired mt={3}>
-              <Input
-                variant="filled"
-                bg="#E0E0E0"
-                placeholder="Enter a message..."
+
+            {/* Sender */}
+            <div className="Sender" mt={3}>
+              <InputEmoji
                 value={newMessage}
                 onChange={typingHandler}
+                onEnter={sendMessage}
+                cleanOnEnter
               />
-            </FormControl>
+              <button className="send_button" onClick={sendMessage}>
+                Send
+              </button>
+            </div>
           </Box>
         </>
       ) : (
