@@ -15,6 +15,7 @@ import ProfileModal from "./ProfileModal";
 import UpdateGroupChatModal from "./UpdateGroupChatModal";
 import ScrollableChat from "./ScrollableChat";
 import InputEmoji from "react-input-emoji";
+import { baseUrl } from "../config/Api";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat } = ChatState();
@@ -42,7 +43,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.get(
-        `http://localhost:7781/api/message/${selectedChat._id}`,
+        `${baseUrl}/message/${selectedChat._id}`,
         config
       );
 
@@ -93,7 +94,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.post(
-        "http://localhost:7781/api/message",
+        `${baseUrl}/message`,
         {
           content: newMessage,
           chatId: selectedChat._id,

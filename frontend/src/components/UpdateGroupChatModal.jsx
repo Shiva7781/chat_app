@@ -21,6 +21,7 @@ import { ViewIcon } from "@chakra-ui/icons";
 import { ChatState } from "../Context/ChatContextProvider";
 import UserBadgeItem from "./UserBadgeItem";
 import UserListItem from "./UserListItem";
+import { baseUrl } from "../config/Api";
 
 const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -63,7 +64,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
         },
       };
       const { data } = await axios.patch(
-        `http://localhost:7781/api/chat/groupadd`,
+        `${baseUrl}/chat/groupadd`,
         {
           chatId: selectedChat._id,
           userId: user1._id,
@@ -109,7 +110,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
         },
       };
       const { data } = await axios.patch(
-        `http://localhost:7781/api/chat/groupremove`,
+        `${baseUrl}/chat/groupremove`,
         {
           chatId: selectedChat._id,
           userId: user1._id,
@@ -156,7 +157,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
         },
       };
       const { data } = await axios.patch(
-        `http://localhost:7781/api/chat/grouprename`,
+        `${baseUrl}/chat/grouprename`,
         { chatId: selectedChat._id, chatName: groupChatName },
         config
       );
@@ -196,7 +197,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessage }) => {
         },
       };
       const { data } = await axios.get(
-        `http://localhost:7781/api/user?search=${search}`,
+        `${baseUrl}/user?search=${search}`,
         config
       );
 

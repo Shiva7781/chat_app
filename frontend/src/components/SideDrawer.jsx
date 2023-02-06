@@ -27,6 +27,7 @@ import ChatLoading from "./ChatLoading";
 import UserListItem from "./UserListItem";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { baseUrl } from "../config/Api";
 
 const SideDrawer = () => {
   const toast = useToast();
@@ -65,7 +66,7 @@ const SideDrawer = () => {
         },
       };
       const { data } = await axios.get(
-        `http://localhost:7781/api/user?search=${search}`,
+        `${baseUrl}/user?search=${search}`,
         config
       );
 
@@ -97,11 +98,7 @@ const SideDrawer = () => {
         },
       };
 
-      const { data } = await axios.post(
-        `http://localhost:7781/api/chat`,
-        { userId },
-        config
-      );
+      const { data } = await axios.post(`${baseUrl}/chat`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) {
         setChats([...chats, data]);

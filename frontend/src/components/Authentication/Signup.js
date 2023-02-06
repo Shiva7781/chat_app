@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "../../config/Api";
 
 const Signup = () => {
   const toast = useToast();
@@ -73,10 +74,7 @@ const Signup = () => {
     }
 
     try {
-      const { data } = await axios.post(
-        `http://localhost:7781/api/user`,
-        userData
-      );
+      const { data } = await axios.post(`${baseUrl}/api/user`, userData);
       setLoading(false);
 
       toast({
@@ -94,8 +92,8 @@ const Signup = () => {
 
       // console.log("err:", err);
       toast({
-        title: err.response?.data || err.message,
-        description: "Registration Failed",
+        title: "Registration Failed",
+        description: err.response?.data || err.message,
         status: "warning",
         duration: 4321,
         isClosable: true,

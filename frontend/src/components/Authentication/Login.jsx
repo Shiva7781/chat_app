@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { baseUrl } from "../../config/Api";
 
 const Login = () => {
   const toast = useToast();
@@ -45,12 +46,12 @@ const Login = () => {
     }
 
     try {
-      const { data } = await axios.post(
-        `http://localhost:7781/api/user/login`,
-        userData
-      );
-      setLoading(false);
+      const { data } = await axios.post(`${baseUrl}/user/login`, userData);
 
+      console.log("data:", data);
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      setLoading(false);
       toast({
         title: "Login Successful",
         status: "success",
@@ -58,17 +59,17 @@ const Login = () => {
         isClosable: true,
         position: "top",
       });
-      localStorage.setItem("userInfo", JSON.stringify(data));
 
-      navigate("/chats");
-      console.log("data:", data);
+      setTimeout(() => {
+        navigate("/chats");
+      }, 1234);
     } catch (err) {
       setLoading(false);
 
       // console.log("err:", err);
       toast({
-        title: err.response?.data || err.message,
-        description: "Login Failed",
+        title: "Login Failed",
+        description: err.response?.data || err.message,
         status: "warning",
         duration: 4321,
         isClosable: true,
