@@ -12,8 +12,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../../config/Api";
+import { ChatState } from "../../Context/ChatContextProvider";
 
 const Login = () => {
+  const { setUser } = ChatState();
   const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -49,6 +51,8 @@ const Login = () => {
       const { data } = await axios.post(`${baseUrl}/user/login`, userData);
 
       console.log("data:", data);
+
+      setUser(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
 
       setLoading(false);
@@ -62,7 +66,7 @@ const Login = () => {
 
       setTimeout(() => {
         navigate("/chats");
-      }, 1234);
+      }, 3456);
     } catch (err) {
       setLoading(false);
 

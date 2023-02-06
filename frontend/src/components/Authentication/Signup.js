@@ -10,12 +10,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../config/Api";
 
 const Signup = () => {
   const toast = useToast();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({
@@ -74,7 +72,7 @@ const Signup = () => {
     }
 
     try {
-      const { data } = await axios.post(`${baseUrl}/api/user`, userData);
+      const { data } = await axios.post(`${baseUrl}/user`, userData);
       setLoading(false);
 
       toast({
@@ -84,9 +82,14 @@ const Signup = () => {
         isClosable: true,
         position: "top",
       });
-
-      navigate("/chats");
       console.log("data:", data);
+
+      setUserData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
     } catch (err) {
       setLoading(false);
 
@@ -119,6 +122,7 @@ const Signup = () => {
         <FormLabel>Name</FormLabel>
         <Input
           name="name"
+          value={userData.name}
           p={1.5}
           placeholder="Enter Your Name"
           disabled={loading}
@@ -131,6 +135,7 @@ const Signup = () => {
         <Input
           name="email"
           type="email"
+          value={userData.email}
           p={1.5}
           placeholder="Enter Your Email"
           disabled={loading}
@@ -143,6 +148,7 @@ const Signup = () => {
         <InputGroup>
           <Input
             name="password"
+            value={userData.password}
             p={1.5}
             type={show ? "text" : "password"}
             placeholder="Create Password"
@@ -162,6 +168,7 @@ const Signup = () => {
         <InputGroup>
           <Input
             name="confirmPassword"
+            value={userData.confirmPassword}
             p={1.5}
             type={show ? "text" : "password"}
             placeholder="Confirm Password"

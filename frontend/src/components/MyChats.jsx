@@ -12,6 +12,7 @@ import { baseUrl } from "../config/Api";
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  // console.log("chats:", chats);
 
   const toast = useToast();
 
@@ -115,7 +116,11 @@ const MyChats = ({ fetchAgain }) => {
                   mr={1}
                   size="md"
                   cursor="pointer"
-                  src={getSenderPic(loggedUser, chat.users)}
+                  src={
+                    chat.isGroupChat
+                      ? chat.groupAdmin.pic
+                      : getSenderPic(loggedUser, chat.users)
+                  }
                 />
 
                 <Box>

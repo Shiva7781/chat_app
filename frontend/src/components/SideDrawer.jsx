@@ -32,7 +32,7 @@ import { baseUrl } from "../config/Api";
 const SideDrawer = () => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const { user, setUser, setSelectedChat, chats, setChats } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
@@ -43,6 +43,8 @@ const SideDrawer = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
+
+    setUser(null);
     navigate("/");
   };
 
@@ -88,12 +90,14 @@ const SideDrawer = () => {
   };
 
   const accessChat = async (userId) => {
+    // console.log("userId:", userId);
+
     setLoadingChat(true);
 
     try {
       const config = {
         headers: {
-          "Content-type": "aplication/json",
+          "Content-type": "application/json",
           authorization: `Bearer ${user.accessToken}`,
         },
       };
@@ -101,7 +105,7 @@ const SideDrawer = () => {
       const { data } = await axios.post(`${baseUrl}/chat`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) {
-        setChats([...chats, data]);
+        setChats([data, ...chats]);
       }
 
       setSelectedChat(data);
