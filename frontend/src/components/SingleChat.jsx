@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   Avatar,
@@ -16,7 +16,15 @@ import UpdateGroupChatModal from "./UpdateGroupChatModal";
 import ScrollableChat from "./ScrollableChat";
 import InputEmoji from "react-input-emoji";
 import { baseUrl } from "../config/Api";
+import Lottie from "react-lottie";
+import TypingAnimation from "../animation/typing.json";
 
+//
+import io from "socket.io-client";
+//
+const ENDPOINT = "http://localhost:7781";
+
+//
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat } = ChatState();
   const toast = useToast();
@@ -25,11 +33,50 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
 
+  let socket = useRef();
+  let selectedChatCompare = useRef();
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: TypingAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   useEffect(() => {
     fetchMessage();
 
+    selectedChatCompare.current = selectedChat;
     // eslint-disable-next-line
   }, [selectedChat]);
+
+  // Connect to Socket.io
+  useEffect(() => {
+    socket.current = io(ENDPOINT);
+    socket.current.emit("setup", user);
+    socket.current.on("connected", () => setSocketConnected(true));
+    socket.current.on("typing", () => setIsTyping(true));
+    socket.current.on("stop_typing", () => setIsTyping(false));
+
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    socket.current.on("message_received", (newMessageReceived) => {
+      if (
+        !selectedChatCompare.current ||
+        selectedChatCompare.current._id !== newMessageReceived.chat._id
+      ) {
+        // give notification
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
 
   const fetchMessage = async () => {
     if (!selectedChat) return;
@@ -48,9 +95,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       );
 
       setMessages(data);
-
       setLoading(false);
       // console.log("data:", data);
+
+      socket.current.emit("join_chat", selectedChat._id);
     } catch (err) {
       setLoading(false);
 
@@ -68,13 +116,27 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const typingHandler = (msg) => {
-    console.log("msg:", msg);
+    // console.log("msg:", msg);
 
     setNewMessage(msg);
+
     // Typing Indicator Logic
+    if (!socketConnected) return;
+
+    if (msg) {
+      console.log("msg:", msg);
+
+      socket.current.emit("typing", selectedChat._id);
+    }
+
+    setTimeout(() => {
+      socket.current.emit("stop_typing", selectedChat._id);
+    }, 2773);
   };
 
   const sendMessage = async () => {
+    socket.current.emit("stop_typing", selectedChat._id);
+
     if (!newMessage) {
       return toast({
         title: "Type some message",
@@ -104,8 +166,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       setMessages([...messages, data]);
       setNewMessage("");
-
       // console.log("data:", data);
+
+      socket.current.emit("new_message", data);
     } catch (err) {
       console.log("err:", err);
 
@@ -119,7 +182,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       });
     }
   };
-
   // console.log("user:", user);
   // console.log("selectedChat:", selectedChat);
 
@@ -218,6 +280,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
+            {isTyping ? (
+              <div>
+                <Lottie
+                  options={defaultOptions}
+                  width={77}
+                  style={{ marginBottom: 15, marginLeft: 0 }}
+                />
+              </div>
+            ) : null}
             {/* Sender */}
             <div className="Sender" mt={3}>
               <InputEmoji

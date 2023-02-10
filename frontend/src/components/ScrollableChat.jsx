@@ -3,6 +3,8 @@ import { isSameSenderMargin, isSameUser } from "../config/ChatLogics";
 import { ChatState } from "../Context/ChatContextProvider";
 
 const ScrollableChat = ({ messages }) => {
+  // console.log("messages:", messages);
+
   const { user } = ChatState();
   const scroll = useRef();
 
@@ -20,7 +22,7 @@ const ScrollableChat = ({ messages }) => {
       {messages.map((msg, i) => (
         <div
           ref={scroll}
-          key={msg._id}
+          key={i}
           style={{
             display: "flex",
           }}
