@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -20,7 +20,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Search2Icon, BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import NotificationBadge, { Effect } from "react-notification-badge";
+import { Search2Icon, BellIcon } from "@chakra-ui/icons";
 import { ChatState } from "../Context/ChatContextProvider";
 import ProfileModal from "./ProfileModal";
 import ChatLoading from "./ChatLoading";
@@ -28,13 +29,22 @@ import UserListItem from "./UserListItem";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../config/Api";
+import { getSenderName } from "../config/ChatLogics";
 
 const SideDrawer = () => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { user, setUser, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setUser,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = React.useRef();
+  const btnRef = useRef();
 
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -155,12 +165,36 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
+
               <BellIcon m={1} boxSize={6} />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList pl={2}>
+              {!notification.length
+                ? "No new Messages"
+                : notification.map((noti, i) => (
+                    <MenuItem
+                      key={i}
+                      onClick={() => {
+                        setSelectedChat(noti.chat);
+                        setNotification(notification.filter((n) => n !== noti));
+                      }}
+                    >
+                      {noti.chat.isGroupChat
+                        ? `New Messaage in ${noti.chat.chatName}`
+                        : `New Message from ${getSenderName(
+                            user,
+                            noti.chat.users
+                          )}`}
+                    </MenuItem>
+                  ))}
+            </MenuList>
           </Menu>
           <Menu m={5}>
-            <MenuButton as="button" right={<ChevronDownIcon />}>
+            <MenuButton as="button">
               <Avatar size="sm" name={user.name} src={user.pic} />
             </MenuButton>
             <MenuList>

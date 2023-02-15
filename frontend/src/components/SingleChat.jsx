@@ -21,12 +21,12 @@ import TypingAnimation from "../animation/typing.json";
 
 //
 import io from "socket.io-client";
-//
-const ENDPOINT = "http://localhost:7781";
+const ENDPOINT = "https://chat-app-be-273q.onrender.com/";
 
 //
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
   const toast = useToast();
 
   const [messages, setMessages] = useState([]);
@@ -47,13 +47,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     },
   };
 
-  useEffect(() => {
-    fetchMessage();
-
-    selectedChatCompare.current = selectedChat;
-    // eslint-disable-next-line
-  }, [selectedChat]);
-
   // Connect to Socket.io
   useEffect(() => {
     socket.current = io(ENDPOINT);
@@ -66,12 +59,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   useEffect(() => {
+    fetchMessage();
+
+    selectedChatCompare.current = selectedChat;
+    // eslint-disable-next-line
+  }, [selectedChat]);
+
+  useEffect(() => {
     socket.current.on("message_received", (newMessageReceived) => {
       if (
-        !selectedChatCompare.current ||
+        !selectedChatCompare.current || // if chat is not selected or doesn't match current chat
         selectedChatCompare.current._id !== newMessageReceived.chat._id
       ) {
         // give notification
+
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([...notification, newMessageReceived]);
+          setFetchAgain(!fetchAgain);
+        }
       } else {
         setMessages([...messages, newMessageReceived]);
       }

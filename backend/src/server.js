@@ -3,7 +3,7 @@ const connectDB = require("./configs/db");
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   connectDB();
   console.log(
     `Backend server is runnig on http://localhost:${port} DB connecting...`
@@ -11,11 +11,11 @@ app.listen(port, () => {
 });
 
 // ---------------socket.io-----------------
-const io = require("socket.io")(7781, {
-  pingTimeout: 66666,
+const io = require("socket.io")(server, {
+  pingTimeout: 54321,
 
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["https://chat-app-shiva7781.netlify.app", "http://localhost:3000"],
   },
 });
 
