@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, memo } from "react";
-import { isSameSenderMargin, isSameUser } from "../config/ChatLogics";
+import {
+  isLastMessage,
+  isSameSender,
+  isSameSenderMargin,
+  isSameUser,
+} from "../config/ChatLogics";
 import { ChatState } from "../Context/ChatContextProvider";
+import { Avatar, Tooltip } from "@chakra-ui/react";
 
-const ScrollableChat = ({ messages }) => {
+const ScrollableChat = ({ messages, selectedChatIsGroupChat }) => {
   // console.log("messages:", messages);
 
   const { user } = ChatState();
@@ -19,14 +25,37 @@ const ScrollableChat = ({ messages }) => {
 
   return (
     <>
-      {messages.map((msg, i) => (
+      {messages?.map((msg, i) => (
         <div
           ref={scroll}
           key={i}
           style={{
             display: "flex",
+            alignItems: "center",
           }}
         >
+          {selectedChatIsGroupChat ? (
+            <>
+              {(isSameSender(messages, msg, i, user._id) ||
+                isLastMessage(messages, i, user._id)) && (
+                <Tooltip
+                  label={msg.sender.name}
+                  placement="bottom-start"
+                  hasArrow
+                >
+                  <Avatar
+                    mt="7px"
+                    mr={1}
+                    size="sm"
+                    cursor="pointer"
+                    name={msg.sender.name}
+                    src={msg.sender.pic}
+                  />
+                </Tooltip>
+              )}
+            </>
+          ) : null}
+
           <div
             style={{
               backgroundColor: `${
