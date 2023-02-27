@@ -23,6 +23,7 @@
 - User can search other users based on name or email.
 - Once the user select one of the user or group, transition to a chat section.
 - User can create a new group and rename the group name as well.
+- Navbar with notification for unread messages and modal for profile and group info.
 - Only group admin can remove someone from the group or group members can leave the group.
 - In chat section real time typing indicator animation and user can send the emojis as well.
 
