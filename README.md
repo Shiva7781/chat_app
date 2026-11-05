@@ -1,8 +1,8 @@
 # MERN CHAT APP
 
-## Backend:- https://chat-app-be-273q.onrender.com/api
+**Live demo:** https://chat-app-shiva7781.netlify.app/ &nbsp;·&nbsp; **Backend API:** https://chat-app-be-273q.onrender.com/api
 
-## Deployment link:- https://chat-app-shiva7781.netlify.app/
+> The backend runs on Render's free tier, so the first request after a period of inactivity can take ~30–45 seconds while it wakes up.
 
 <br>
 
